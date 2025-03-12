@@ -1,5 +1,5 @@
 import { generateToken } from "../lib/token-generator.lib.js";
-import User from "../models/user.model.js";
+import Auth from "../models/auth.model.js";
 import bcrypt from "bcryptjs";
 
 export const signup = async (req, res) => {
@@ -13,14 +13,14 @@ export const signup = async (req, res) => {
       return res.status(400).json({ message: "Password must be at least 6 characters" });
     }
 
-    const user = await User.findOne({ email });
+    const user = await Auth.findOne({ email });
 
     if (user) return res.status(400).json({ message: "Email already exists" });
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const newUser = new User({
+    const newUser = new Auth({
       email,
       password: hashedPassword,
     });
@@ -46,7 +46,7 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const user = await Auth.findOne({ email });
 
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });

@@ -3,12 +3,12 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 
-import { PORT } from './src/config/config.js';
+import { PORT } from './config/config.js';
 
-import connectToDatabase from './src/database/mongodb.js'
-import errorMiddleware from './src/middlewares/error.middleware.js'
+import connectToDatabase from './database/mongodb.js'
+import errorMiddleware from './middlewares/error.middleware.js'
 
-import userRouter from './src/routes/user.route.js';
+import userRouter from './routes/user.route.js';
 
 
 const app = express();

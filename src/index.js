@@ -16,7 +16,7 @@ const server = http.createServer(app);
 
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://job-quick-next.vercel.app/"
+  "https://job-quick-next.vercel.app"
 ];
 
 app.use(

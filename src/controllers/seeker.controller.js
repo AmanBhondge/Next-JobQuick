@@ -23,20 +23,20 @@ export const getSeekerDetails = async (req, res) => {
 
 export const postSeekerDetails = async (req, res) => {
     try {
-        const { seekerId } = req.body;
+        const { _id } = req.body; 
 
-        if (!seekerId) {
-            return res.status(400).json({ message: "seekerId is required" });
+        if (!_id) {
+            return res.status(400).json({ message: "_id (Auth user ID) is required" });
         }
 
-        const existingSeeker = await Seeker.findOne({ seekerId });
+        const existingSeeker = await Seeker.findById(_id);
         if (existingSeeker) {
             return res.status(400).json({ message: "Seeker details already exist for this user" });
         }
 
-        const seekerDetails = new Seeker(req.body);
+        const seekerDetails = new Seeker({ _id, ...req.body }); 
         await seekerDetails.save();
-        
+
         res.status(201).json(seekerDetails);
     } catch (error) {
         console.error("Error in postSeekerDetails:", error.message);
@@ -46,9 +46,9 @@ export const postSeekerDetails = async (req, res) => {
 
 export const updateSeekerDetails = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { _id } = req.params; 
 
-        if (!mongoose.Types.ObjectId.isValid(id)) {
+        if (!mongoose.Types.ObjectId.isValid(_id)) {
             return res.status(400).json({ message: "Invalid seeker ID" });
         }
 
@@ -57,7 +57,7 @@ export const updateSeekerDetails = async (req, res) => {
         }
 
         const updatedSeekerDetails = await Seeker.findByIdAndUpdate(
-            id,
+            _id,
             req.body,
             { new: true, runValidators: true }
         );

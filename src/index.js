@@ -9,6 +9,7 @@ import connectToDatabase from './database/mongodb.js'
 import errorMiddleware from './middlewares/error.middleware.js'
 
 import authRouter from './routes/auth.route.js';
+import seekerRouter from './routes/seeker.routes.js';
 
 
 const app = express();
@@ -36,6 +37,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/seeker', seekerRouter);
 
 
 app.use(errorMiddleware);

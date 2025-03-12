@@ -1,11 +1,11 @@
 {
   "name": "nextjobquick",
   "version": "0.0.0",
-  "main": "src/index.js",
+  "main": "index.js",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon index.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",

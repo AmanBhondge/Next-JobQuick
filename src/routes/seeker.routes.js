@@ -8,6 +8,6 @@ seekerRouter.get('/get/:id', authorize, getSeekerDetails);
 
 seekerRouter.post('/post', authorize, postSeekerDetails);
 
-seekerRouter.patch('/update/:seekerId', authorize, updateSeekerDetails);
+seekerRouter.patch('/update/:id', authorize, updateSeekerDetails);
 
 export default seekerRouter;

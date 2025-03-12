@@ -11,7 +11,7 @@ export const getSeekerDetails = async (req, res) => {
 
         const seekerDetails = await SeekerDetails.findById(id);
         if (!seekerDetails) {
-            return res.status(404).json({ message: "SeekerDetails user not found" });
+            return res.status(404).json({ message: "Seeker user not found" });
         }
 
         res.status(200).json(seekerDetails);
@@ -26,13 +26,13 @@ export const postSeekerDetails = async (req, res) => {
     try {
         const { _id } = req.body; 
 
-        if (!_id) {
-            return res.status(400).json({ message: "_id (Auth user ID) is required" });
+        if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
+            return res.status(400).json({ message: "Valid _id (Auth user ID) is required" });
         }
 
         const existingSeekerDetails = await SeekerDetails.findById(_id);
         if (existingSeekerDetails) {
-            return res.status(400).json({ message: "SeekerDetails already exists for this user" });
+            return res.status(400).json({ message: "Seeker details already exist for this user" });
         }
 
         const seekerDetails = new SeekerDetails({ _id, ...req.body }); 
@@ -59,13 +59,13 @@ export const updateSeekerDetails = async (req, res) => {
         }
 
         const updatedSeekerDetails = await SeekerDetails.findByIdAndUpdate(
-            _id,
+            id, 
             req.body,
             { new: true, runValidators: true }
         );
 
         if (!updatedSeekerDetails) {
-            return res.status(404).json({ message: "SeekerDetails user not found" });
+            return res.status(404).json({ message: "Seeker user not found" });
         }
 
         res.status(200).json(updatedSeekerDetails);

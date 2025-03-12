@@ -3,13 +3,13 @@ import mongoose from "mongoose";
 
 export const getSeekerDetails = async (req, res) => {
     try {
-        const { _id } = req.params; 
+        const { id } = req.params; 
 
-        if (!mongoose.Types.ObjectId.isValid(_id)) {
+        if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ message: "Invalid SeekerDetails ID" });
         }
 
-        const seekerDetails = await SeekerDetails.findById(_id);
+        const seekerDetails = await SeekerDetails.findById(id);
         if (!seekerDetails) {
             return res.status(404).json({ message: "SeekerDetails user not found" });
         }
@@ -48,9 +48,9 @@ export const postSeekerDetails = async (req, res) => {
 
 export const updateSeekerDetails = async (req, res) => {
     try {
-        const { _id } = req.params; 
+        const { id } = req.params; 
 
-        if (!mongoose.Types.ObjectId.isValid(_id)) {
+        if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ message: "Invalid SeekerDetails ID" });
         }
 

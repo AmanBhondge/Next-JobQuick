@@ -4,7 +4,7 @@ import authorize from '../middlewares/authorize.middleware.js';
 
 const seekerRouter = express.Router();
 
-seekerRouter.get('/get/:seekerId', authorize, getSeekerDetails);
+seekerRouter.get('/get/:id', authorize, getSeekerDetails);
 
 seekerRouter.post('/post', authorize, postSeekerDetails);
 

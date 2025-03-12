@@ -2,14 +2,14 @@ import mongoose from "mongoose";
 
 const seekerDetailsSchema = new mongoose.Schema(
     {
-        seekerId: {
+        _id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Auth",
+            ref: "Auth", 
             required: true
         },
-        fullName: { type: String,},
+        fullName: { type: String },
         phoneNumber: { type: String },
-        StringOfBirth: { type: String },
+        dateOfBirth: { type: String }, 
         gender: { type: String },
         address: { type: String },
         city: { type: String },
@@ -33,11 +33,10 @@ const seekerDetailsSchema = new mongoose.Schema(
         expPosition: { type: String },
         expStartYear: { type: String },
         expEndYear: { type: String },
-
-
     },
     {
         timestamps: true,
+        _id: false 
     }
 );
 

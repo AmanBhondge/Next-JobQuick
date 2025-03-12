@@ -3,13 +3,20 @@ import mongoose from "mongoose";
 
 export const getSeekerDetails = async (req, res) => {
     try {
-        const seekerDetails = await Seeker.findById(req.params.id);
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid seeker ID" });
+        }
+
+        const seekerDetails = await Seeker.findById(id);
         if (!seekerDetails) {
             return res.status(404).json({ message: "Seeker user not found" });
         }
+
         res.status(200).json(seekerDetails);
     } catch (error) {
-        console.error("Error in getSeekerDetails", error.message);
+        console.error("Error in getSeekerDetails:", error.message);
         res.status(500).json({ message: "Internal Server Error" });
     }
 };

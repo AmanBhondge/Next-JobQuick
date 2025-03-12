@@ -19,7 +19,6 @@ const seekerDetailsSchema = new mongoose.Schema(
         skills: { type: [String] },
         projectUrl: { type: String },
         summary: { type: String },
-        resume: { type: String },
 
         // Education Details
         eduDegree: { type: String },

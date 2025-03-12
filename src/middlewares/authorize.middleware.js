@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from '../config/config.js'
-import User from '../models/auth.model.js'
+import Auth from '../models/auth.model.js'
 
 const authorize = async (req, res, next) => {
   try {
@@ -14,7 +14,7 @@ const authorize = async (req, res, next) => {
       return res.status(401).json({ message: "Unauthorized - Invalid Token" });
     }
 
-    const user = await User.findById(decoded.userId).select("-password");
+    const user = await Auth.findById(decoded.userId).select("-password");
 
     if (!user) return res.status(404).json({ message: 'User not found' });
 

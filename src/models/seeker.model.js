@@ -9,7 +9,7 @@ const seekerDetailsSchema = new mongoose.Schema(
         },
         fullName: { type: String,},
         phoneNumber: { type: String },
-        dateOfBirth: { type: Date },
+        StringOfBirth: { type: String },
         gender: { type: String },
         address: { type: String },
         city: { type: String },
@@ -25,14 +25,14 @@ const seekerDetailsSchema = new mongoose.Schema(
         eduDegree: { type: String },
         eduInstitution: { type: String },
         eduSpecialisation: { type: String },
-        eduStartYear: { type: Date },
-        eduEndYear: { type: Date },
+        eduStartYear: { type: String },
+        eduEndYear: { type: String },
 
         // Experience Details
         expCompany: { type: String },
         expPosition: { type: String },
-        expStartYear: { type: Date },
-        expEndYear: { type: Date },
+        expStartYear: { type: String },
+        expEndYear: { type: String },
 
 
     },

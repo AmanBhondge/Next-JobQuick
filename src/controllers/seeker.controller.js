@@ -1,4 +1,4 @@
-import SeekerDetails from "../models/SeekerDetails.model.js";
+import SeekerDetails from "../models/seeker.model.js";
 import mongoose from "mongoose";
 
 export const getSeekerDetails = async (req, res) => {

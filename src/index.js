@@ -14,10 +14,23 @@ import userRouter from './routes/user.route.js';
 const app = express();
 const server = http.createServer(app);
 
-app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true,
-}));
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://job-quick-next.vercel.app/"
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());

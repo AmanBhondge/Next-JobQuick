@@ -4,24 +4,27 @@ const seekerDetailsSchema = new mongoose.Schema(
     {
         _id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Auth", 
+            ref: "Auth",
             required: true
         },
-        fullName: { type: String },
-        phoneNumber: { type: String },
-        dateOfBirth: { type: String }, 
-        gender: { type: String },
+        fullName: { type: String, required: true },
+        phoneNumber: { type: String, required: true, minlength: 1 },
+        dateOfBirth: { type: String },
+        gender: {
+            type: String, required: true,
+            enum: ['Male', 'Female', 'Other']
+        },
         address: { type: String },
-        city: { type: String },
-        state: { type: String },
-        country: { type: String },
+        city: { type: String, required: true },
+        state: { type: String, required: true },
+        country: { type: String, required: true },
         pincode: { type: String },
         skills: { type: [String] },
         projectUrl: { type: String },
-        summary: { type: String },
+        summary: { type: String, required: true },
 
         // Education Details
-        eduDegree: { type: String },
+        eduDegree: { type: String, required: true },
         eduInstitution: { type: String },
         eduSpecialisation: { type: String },
         eduStartYear: { type: String },
@@ -35,7 +38,7 @@ const seekerDetailsSchema = new mongoose.Schema(
     },
     {
         timestamps: true,
-        _id: false 
+        _id: false
     }
 );
 

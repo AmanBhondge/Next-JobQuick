@@ -1,4 +1,5 @@
 import SeekerDetails from "../models/seeker.model.js";
+import Auth from "../models/auth.model.js";
 import mongoose from "mongoose";
 
 export const getSeekerDetails = async (req, res) => {
@@ -30,6 +31,15 @@ export const postSeekerDetails = async (req, res) => {
             return res.status(400).json({ message: "Valid _id (Auth user ID) is required" });
         }
 
+        const authUser = await Auth.findById(_id);
+        if (!authUser) {
+            return res.status(404).json({ message: "User not found in Auth collection" });
+        }
+
+        if (authUser.role !== "seeker") {
+            return res.status(403).json({ message: "Only seekers can create SeekerDetails" });
+        }
+
         const existingSeekerDetails = await SeekerDetails.findById(_id);
         if (existingSeekerDetails) {
             return res.status(400).json({ message: "Seeker details already exist for this user" });
@@ -52,6 +62,10 @@ export const updateSeekerDetails = async (req, res) => {
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ message: "Invalid SeekerDetails ID" });
+        }
+
+        if (req.body._id) {
+            return res.status(400).json({ message: "Cannot update _id field" });
         }
 
         if (Object.keys(req.body).length === 0) {

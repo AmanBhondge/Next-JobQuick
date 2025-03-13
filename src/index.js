@@ -9,35 +9,21 @@ import connectToDatabase from './database/mongodb.js'
 import errorMiddleware from './middlewares/error.middleware.js'
 
 import authRouter from './routes/auth.route.js';
-import seekerRouter from './routes/seeker.routes.js';
+import seekerRouter from './routes/seeker.route.js';
+import hosterRouter from './routes/hoster.route.js';
 
 
 const app = express();
 const server = http.createServer(app);
 
-const allowedOrigins = [
-  "http://localhost:3000",
-  "https://job-quick-next.vercel.app"
-];
-
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/seeker', seekerRouter);
+app.use('/api/v1/hoster', hosterRouter);
 
 
 app.use(errorMiddleware);

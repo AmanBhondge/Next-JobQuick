@@ -11,6 +11,7 @@ import errorMiddleware from './middlewares/error.middleware.js'
 import authRouter from './routes/auth.route.js';
 import seekerRouter from './routes/seeker.route.js';
 import hosterRouter from './routes/hoster.route.js';
+import categoriesRouter from './routes/catogries.route.js';
 
 
 const app = express();
@@ -24,6 +25,7 @@ app.use(cookieParser());
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/seeker', seekerRouter);
 app.use('/api/v1/hoster', hosterRouter);
+app.use('/api/v1/categories',categoriesRouter);
 
 
 app.use(errorMiddleware);

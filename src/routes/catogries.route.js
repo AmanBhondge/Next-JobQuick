@@ -4,7 +4,7 @@ import  { getCategories ,postCategories } from "../controllers/catogries.control
 
 const categoriesRouter = express.Router();
 
-categoriesRouter.get('/', authorize, getCategories );
-categoriesRouter.post('/', postCategories );
+categoriesRouter.get('/get', authorize, getCategories );
+categoriesRouter.post('/post', postCategories );
 
 export default categoriesRouter;

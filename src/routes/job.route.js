@@ -16,7 +16,7 @@ jobRouter.get('/dashboard/:creatorId', authorize , getDashboardJobs );
 
 jobRouter.get('/table/:hosterId', authorize , getTableJobs );
 
-jobRouter.get('/job/:id', authorize , getJobDetails );
+jobRouter.get('/:id', authorize , getJobDetails );
 
 jobRouter.post('/post', authorize , limiter, postJob );
 

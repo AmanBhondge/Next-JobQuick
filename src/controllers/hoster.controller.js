@@ -2,6 +2,8 @@ import HosterDetails from "../models/hoster.model.js";
 import Auth from "../models/auth.model.js"; 
 import mongoose from "mongoose";
 
+const validGenders = ["Male", "Female", "Other"];
+
 export const getHosterDetails = async (req, res) => {
     try {
         const { id } = req.params;
@@ -21,7 +23,7 @@ export const getHosterDetails = async (req, res) => {
 
 export const postHosterDetails = async (req, res) => {
     try {
-        const { _id } = req.body; 
+        const { _id, gender } = req.body; 
 
         if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
             return res.status(400).json({ message: "Valid _id (Auth user ID) is required" });
@@ -41,6 +43,10 @@ export const postHosterDetails = async (req, res) => {
             return res.status(400).json({ message: "Hoster details already exist for this user" });
         }
 
+        if (gender && !validGenders.includes(gender)) {
+            return res.status(400).json({ message: `Invalid gender. Allowed values: ${validGenders.join(", ")}` });
+        }
+
         const hosterDetails = new HosterDetails({ _id, ...req.body }); 
         await hosterDetails.save();
 
@@ -50,7 +56,6 @@ export const postHosterDetails = async (req, res) => {
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
-
 
 export const updateHosterDetails = async (req, res) => {
     try {
@@ -66,6 +71,10 @@ export const updateHosterDetails = async (req, res) => {
 
         if (Object.keys(req.body).length === 0) {
             return res.status(400).json({ message: "No fields provided for update" });
+        }
+
+        if (req.body.gender && !validGenders.includes(req.body.gender)) {
+            return res.status(400).json({ message: `Invalid gender. Allowed values: ${validGenders.join(", ")}` });
         }
 
         const updatedHosterDetails = await HosterDetails.findByIdAndUpdate(

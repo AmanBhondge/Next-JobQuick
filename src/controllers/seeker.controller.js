@@ -2,6 +2,8 @@ import SeekerDetails from "../models/seeker.model.js";
 import Auth from "../models/auth.model.js";
 import mongoose from "mongoose";
 
+const validGenders = ["Male", "Female", "Other"];
+
 export const getSeekerDetails = async (req, res) => {
     try {
         const { id } = req.params; 
@@ -22,10 +24,9 @@ export const getSeekerDetails = async (req, res) => {
     }
 };
 
-
 export const postSeekerDetails = async (req, res) => {
     try {
-        const { _id } = req.body; 
+        const { _id, gender } = req.body; 
 
         if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
             return res.status(400).json({ message: "Valid _id (Auth user ID) is required" });
@@ -45,16 +46,19 @@ export const postSeekerDetails = async (req, res) => {
             return res.status(400).json({ message: "Seeker details already exist for this user" });
         }
 
+        if (gender && !validGenders.includes(gender)) {
+            return res.status(400).json({ message: `Invalid gender. Allowed values: ${validGenders.join(", ")}` });
+        }
+
         const seekerDetails = new SeekerDetails({ _id, ...req.body }); 
         await seekerDetails.save();
 
         res.status(201).json(seekerDetails);
     } catch (error) {
         console.error("Error in postSeekerDetails:", error.message);
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(500).json({ message: "Internal Server Error or Check gender field" });
     }
 };
-
 
 export const updateSeekerDetails = async (req, res) => {
     try {
@@ -70,6 +74,10 @@ export const updateSeekerDetails = async (req, res) => {
 
         if (Object.keys(req.body).length === 0) {
             return res.status(400).json({ message: "No fields provided for update" });
+        }
+
+        if (req.body.gender && !validGenders.includes(req.body.gender)) {
+            return res.status(400).json({ message: `Invalid gender. Allowed values: ${validGenders.join(", ")}` });
         }
 
         const updatedSeekerDetails = await SeekerDetails.findByIdAndUpdate(

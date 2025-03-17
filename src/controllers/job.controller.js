@@ -2,6 +2,7 @@ import Job from '../models/job.model.js';
 import mongoose from 'mongoose';
 import Category from '../models/categories.model.js';
 import Applicant from '../models/applicant.model.js';
+import Auth from '../models/auth.model.js';
 
 // Get filtered jobs
 export const getFilteredJobs = async (req, res) => {
@@ -29,7 +30,7 @@ export const getFilteredJobs = async (req, res) => {
 
         const jobList = await Job.find(filter)
             .populate("category", "title")
-            .populate("createdBy", "fullName email")
+            .populate("createdBy", "email")
             .sort({ dateCreated: -1 })
             .skip(skip)
             .limit(limit)
@@ -80,10 +81,10 @@ export const getDashboardJobs = async (req, res) => {
     }
 };
 
-export const getTableJobs = async (req,res) => {
+export const getTableJobs = async (req, res) => {
     try {
         const { hosterId } = req.params;
-        const { page = 1, limit = 10, shortlisted } = req.query; 
+        const { page = 1, limit = 10, shortlisted } = req.query;
         const skip = (page - 1) * limit;
 
         const jobs = await Job.find({ createdBy: hosterId }).select("_id title companyName jobType");
@@ -97,7 +98,7 @@ export const getTableJobs = async (req,res) => {
         const filterQuery = { jobId: { $in: jobIds } };
 
         if (shortlisted !== undefined) {
-            filterQuery.shortListed = shortlisted === 'true'; 
+            filterQuery.shortListed = shortlisted === 'true';
         }
 
         const totalCount = await Applicant.countDocuments(filterQuery);
@@ -106,7 +107,7 @@ export const getTableJobs = async (req,res) => {
         const applicants = await Applicant.find(filterQuery)
             .populate("applicantId", "fullName phoneNumber")
             .populate("jobId", "title companyName jobType")
-            .sort({ createdAt: -1 }) 
+            .sort({ createdAt: -1 })
             .skip(skip)
             .limit(parseInt(limit));
 
@@ -152,7 +153,7 @@ export const getJobDetails = async (req, res) => {
 // Post a new job
 export const postJob = async (req, res) => {
     try {
-        const { createdBy, category, skills } = req.body;
+        const { createdBy, categoryTitle, subcategories, skills } = req.body;
 
         if (!createdBy || !mongoose.Types.ObjectId.isValid(createdBy)) {
             return res.status(400).json({ message: "Valid createdBy (Auth user ID) is required" });
@@ -164,29 +165,54 @@ export const postJob = async (req, res) => {
         }
 
         if (authUser.role !== "hoster") {
-            return res.status(403).json({ message: "Only hoster can post jobs" });
+            return res.status(403).json({ message: "Only hosters can post jobs" });
         }
 
-        if (!category || !mongoose.Types.ObjectId.isValid(category)) {
-            return res.status(400).json({ message: "Valid category ID is required" });
+        if (!categoryTitle || typeof categoryTitle !== "string" || categoryTitle.trim() === "") {
+            return res.status(400).json({ message: "Valid category title is required" });
         }
-        const categoryExists = await Category.findById(category);
-        if (!categoryExists) {
+
+        const category = await Category.findOne({ title: categoryTitle.trim() });
+        if (!category) {
             return res.status(404).json({ message: "Category not found" });
+        }
+
+        let validSubcategories = [];
+        if (subcategories) {
+            const subcategoryArray = Array.isArray(subcategories)
+                ? subcategories
+                : subcategories.split(",").map(s => s.trim());
+
+            validSubcategories = subcategoryArray.filter(sub =>
+                category.subcategories.some(catSub => catSub.title.toLowerCase() === sub.toLowerCase())
+            );
+
+            const invalidSubcategories = subcategoryArray.filter(sub =>
+                !category.subcategories.some(catSub => catSub.title.toLowerCase() === sub.toLowerCase())
+            );
+
+            if (invalidSubcategories.length > 0) {
+                return res.status(400).json({
+                    message: `Invalid subcategories: ${invalidSubcategories.join(", ")}`,
+                });
+            }
         }
 
         if (!Array.isArray(skills) || skills.length === 0) {
             return res.status(400).json({ message: "At least one skill is required" });
         }
 
-        const job = new Job(req.body);
+        const job = new Job({ ...req.body, category: category._id, subcategories: validSubcategories });
+
         const savedJob = await job.save();
 
         res.status(201).json({ success: true, message: "Job created successfully", job: savedJob });
     } catch (error) {
+        console.error("Error in postJob:", error.message);
         res.status(500).json({ success: false, error: error.message });
     }
 };
+
 
 // Update job
 export const updateJob = async (req, res) => {

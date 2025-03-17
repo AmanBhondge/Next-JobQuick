@@ -18,7 +18,7 @@ jobRouter.get('/table/:hosterId', authorize , getTableJobs );
 
 jobRouter.get('/job/:id', authorize , getJobDetails );
 
-jobRouter.post('/post', authorize , limiter, postJob );
+jobRouter.post('/post',  limiter, postJob );
 
 jobRouter.patch('/update/:id', authorize , limiter, updateJob );
 

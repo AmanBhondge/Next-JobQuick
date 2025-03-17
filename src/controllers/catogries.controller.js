@@ -12,7 +12,7 @@ export const getCategories = async (req, res) => {
 
 export const postCategories = async (req, res) => {
     try {
-        let { title, subcategories } = req.body; 
+        let { title, subcategories } = req.body;
 
         if (!title || typeof title !== "string" || title.trim() === "") {
             return res.status(400).json({ message: "Category title is required and must be a string" });
@@ -28,7 +28,8 @@ export const postCategories = async (req, res) => {
             return res.status(400).json({ message: "Subcategories must be an array" });
         }
 
-        subcategories = subcategories?.map(sub => ({ title: sub.trim() })).filter(sub => sub.title) || [];
+        subcategories = subcategories?.filter(sub => typeof sub === "string" && sub.trim() !== "")
+            .map(sub => ({ title: sub.trim() })) || [];
 
         const newCategory = new Category({ title, subcategories });
         await newCategory.save();

@@ -24,10 +24,6 @@ export const getSeekerDetails = async (req, res) => {
     }
 };
 
-import mongoose from "mongoose";
-import Auth from "../models/auth.model.js";
-import SeekerDetails from "../models/seekerDetails.model.js";
-
 export const postSeekerDetails = async (req, res) => {
     try {
         const { _id, fullName, phoneNumber, gender, city, state, country, summary, eduDegree } = req.body;

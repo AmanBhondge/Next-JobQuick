@@ -11,22 +11,29 @@ export const getCategories = async (req, res) => {
 };
 
 export const postCategories = async (req, res) => {
-    const { title } = req.body; 
-
     try {
-        if (!title) {
-            return res.status(400).json({ message: "Category title is required" });
+        let { title, subcategories } = req.body; 
+
+        if (!title || typeof title !== "string" || title.trim() === "") {
+            return res.status(400).json({ message: "Category title is required and must be a string" });
         }
+        title = title.trim(); 
 
         const categoryExists = await Category.findOne({ title });
         if (categoryExists) {
             return res.status(400).json({ message: "Category already exists" });
         }
 
-        const newCategory = new Category({ title });
+        if (subcategories && !Array.isArray(subcategories)) {
+            return res.status(400).json({ message: "Subcategories must be an array" });
+        }
+
+        subcategories = subcategories?.map(sub => ({ title: sub.trim() })).filter(sub => sub.title) || [];
+
+        const newCategory = new Category({ title, subcategories });
         await newCategory.save();
 
-        res.status(201).json(newCategory);
+        res.status(201).json({ success: true, message: "Category created successfully", category: newCategory });
     } catch (error) {
         console.error("Error in postCategories:", error.message);
         res.status(500).json({ message: "Internal Server Error" });

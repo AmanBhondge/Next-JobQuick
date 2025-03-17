@@ -24,11 +24,22 @@ export const getSeekerDetails = async (req, res) => {
     }
 };
 
+import mongoose from "mongoose";
+import Auth from "../models/auth.model.js";
+import SeekerDetails from "../models/seekerDetails.model.js";
+
 export const postSeekerDetails = async (req, res) => {
     try {
-        const { _id, gender } = req.body; 
+        const { _id, fullName, phoneNumber, gender, city, state, country, summary, eduDegree } = req.body;
 
-        if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
+        const requiredFields = { _id, fullName, phoneNumber, gender, city, state, country, summary, eduDegree };
+        for (const [key, value] of Object.entries(requiredFields)) {
+            if (!value) {
+                return res.status(400).json({ message: `${key} is required` });
+            }
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(_id)) {
             return res.status(400).json({ message: "Valid _id (Auth user ID) is required" });
         }
 
@@ -46,19 +57,21 @@ export const postSeekerDetails = async (req, res) => {
             return res.status(400).json({ message: "Seeker details already exist for this user" });
         }
 
-        if (gender && !validGenders.includes(gender)) {
+        const validGenders = ["Male", "Female", "Other"];
+        if (!validGenders.includes(gender)) {
             return res.status(400).json({ message: `Invalid gender. Allowed values: ${validGenders.join(", ")}` });
         }
 
-        const seekerDetails = new SeekerDetails({ _id, ...req.body }); 
+        const seekerDetails = new SeekerDetails({ _id, ...req.body });
         await seekerDetails.save();
 
-        res.status(201).json(seekerDetails);
+        res.status(201).json({ success: true, message: "Seeker details created successfully", seekerDetails });
     } catch (error) {
         console.error("Error in postSeekerDetails:", error.message);
-        res.status(500).json({ message: "Internal Server Error or Check gender field" });
+        res.status(500).json({ message: "Internal Server Error" });
     }
 };
+
 
 export const updateSeekerDetails = async (req, res) => {
     try {

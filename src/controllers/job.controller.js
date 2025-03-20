@@ -8,17 +8,33 @@ export const getFilteredJobs = async (req, res) => {
     try {
         let filter = {};
 
-        if (req.query.categories) {
+        if (req.query.categories && req.query.categories.trim() !== "") {
             const categoryTitles = req.query.categories.split(",").map(title => title.trim().toLowerCase());
+
             const categories = await Category.find({
                 title: { $in: categoryTitles.map(title => new RegExp(`^${title}$`, "i")) }
             });
-            if (categories.length) {
+
+            if (categories.length > 0) {
                 filter.category = { $in: categories.map(cat => cat._id) };
             }
         }
 
-        if (req.query.search) filter.$text = { $search: req.query.search.trim() };
+        if (req.query.subcategories && req.query.subcategories.trim() !== "") {
+            const subcategoryTitles = req.query.subcategories.split(",").map(title => title.trim().toLowerCase());
+
+            filter.subcategories = {
+                $in: subcategoryTitles.map(title => new RegExp(`^${title}$`, "i"))
+            };
+        }
+
+        if (req.query.search && req.query.search.trim() !== "") {
+            const searchRegex = new RegExp(req.query.search.trim(), "i");
+            filter.$or = [
+                { title: searchRegex },         
+                { companyName: searchRegex }    
+            ];
+        }
         if (req.query.jobType) filter.jobType = { $regex: new RegExp(req.query.jobType.trim(), "i") };
         if (req.query.workType) filter.workType = { $regex: new RegExp(req.query.workType.trim(), "i") };
         if (req.query.experience) filter.experience = { $regex: new RegExp(req.query.experience.trim(), "i") };

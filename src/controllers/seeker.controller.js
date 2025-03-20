@@ -68,7 +68,6 @@ export const postSeekerDetails = async (req, res) => {
     }
 };
 
-
 export const updateSeekerDetails = async (req, res) => {
     try {
         const { id } = req.params; 

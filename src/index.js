@@ -14,6 +14,7 @@ import hosterRouter from './routes/hoster.route.js';
 import categoriesRouter from './routes/catogries.route.js';
 import jobRouter from './routes/job.route.js'
 import mockTestRouter from './routes/mocktest.route.js';
+import applicantRouter from './routes/applicant.route.js';
 
 
 const app = express();
@@ -30,6 +31,7 @@ app.use('/api/v1/hoster', hosterRouter);
 app.use('/api/v1/categories',categoriesRouter);
 app.use('/api/v1/job', jobRouter);
 app.use('/api/v1/mocktest', mockTestRouter);
+app.use('/api/v1/applicant', applicantRouter);
 
 
 app.use(errorMiddleware);

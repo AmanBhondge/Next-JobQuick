@@ -4,7 +4,6 @@ import Category from '../models/categories.model.js';
 import Applicant from '../models/applicant.model.js';
 import Auth from '../models/auth.model.js';
 
-// Get filtered jobs
 export const getFilteredJobs = async (req, res) => {
     try {
         let filter = {};
@@ -53,7 +52,6 @@ export const getFilteredJobs = async (req, res) => {
     }
 };
 
-// Get dashboard jobs
 export const getDashboardJobs = async (req, res) => {
     try {
         const { creatorId } = req.params;
@@ -129,7 +127,6 @@ export const getTableJobs = async (req, res) => {
     }
 };
 
-// Get job details
 export const getJobDetails = async (req, res) => {
     try {
         if (!mongoose.isValidObjectId(req.params.id)) {
@@ -150,7 +147,6 @@ export const getJobDetails = async (req, res) => {
     }
 };
 
-// Post a new job
 export const postJob = async (req, res) => {
     try {
         const { createdBy, categoryTitle, subcategories, skills } = req.body;
@@ -213,8 +209,6 @@ export const postJob = async (req, res) => {
     }
 };
 
-
-// Update job
 export const updateJob = async (req, res) => {
     try {
         const { id } = req.params;

@@ -35,9 +35,16 @@ export const getFilteredJobs = async (req, res) => {
                 { companyName: searchRegex }    
             ];
         }
-        if (req.query.jobType) filter.jobType = { $regex: new RegExp(req.query.jobType.trim(), "i") };
-        if (req.query.workType) filter.workType = { $regex: new RegExp(req.query.workType.trim(), "i") };
-        if (req.query.experience) filter.experience = { $regex: new RegExp(req.query.experience.trim(), "i") };
+
+        if (req.query.jobType && req.query.jobType.trim() !== "") {
+            filter.jobType = { $regex: new RegExp(req.query.jobType.trim(), "i") };
+        }
+        if (req.query.workType && req.query.workType.trim() !== "") {
+            filter.workType = { $regex: new RegExp(req.query.workType.trim(), "i") };
+        }
+        if (req.query.experience && req.query.experience.trim() !== "") {
+            filter.experience = { $regex: new RegExp(req.query.experience.trim(), "i") };
+        }
 
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;

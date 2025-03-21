@@ -85,7 +85,7 @@ export const getDashboardJobs = async (req, res) => {
 
         const jobs = await Job.find({ createdBy: creatorId })
             .populate("category", "title")
-            .populate("createdBy", "fullName email");
+            .populate("createdBy", "email");
 
         const totalJobs = await Job.countDocuments({ createdBy: creatorId });
         const jobIds = jobs.map(job => job._id);
@@ -126,11 +126,20 @@ export const getTableJobs = async (req, res) => {
         const totalPages = Math.ceil(totalCount / limit);
 
         const applicants = await Applicant.find(filterQuery)
-            .populate("applicantId", "fullName phoneNumber")
-            .populate("jobId", "title companyName jobType")
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(parseInt(limit));
+        .populate({
+            path: "applicantId",
+            model: "Auth",
+            select: "-password",
+            populate: {
+                path: "_id",
+                model: "SeekerDetails",
+                select: "fullName phoneNumber"
+            }
+        })
+        .populate("jobId", "title companyName jobType")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(parseInt(limit));
 
         res.json({
             success: true,

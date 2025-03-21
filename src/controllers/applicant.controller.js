@@ -2,10 +2,10 @@ import Applicant from "../models/applicant.model.js";
 import mongoose from "mongoose";
 import Auth from "../models/auth.model.js";
 
-export const getApplicants = async (req,res) => {
+export const getApplicants = async (req, res) => {
     try {
         let filter = {};
-        const { jobId, applicantId, shortListed, page = 1, limit = 10 } = req.query; 
+        const { jobId, applicantId, shortListed, page = 1, limit = 10 } = req.query;
 
         if (jobId && mongoose.Types.ObjectId.isValid(jobId)) {
             filter.jobId = jobId;
@@ -16,16 +16,25 @@ export const getApplicants = async (req,res) => {
         }
 
         if (shortListed !== undefined) {
-            filter.shortListed = shortListed === 'true'; 
+            filter.shortListed = shortListed === 'true';
         }
 
         const totalCount = await Applicant.countDocuments(filter);
-        const totalPages = Math.ceil(totalCount / limit);
-        const skip = (page - 1) * limit;
+        const totalPages = Math.ceil(totalCount / parseInt(limit));
+        const skip = (parseInt(page) - 1) * parseInt(limit);
 
         const applicants = await Applicant.find(filter)
-            .populate('jobId')
-            .populate('applicantId')
+            .populate({
+                path: "applicantId",
+                model: "Auth",
+                select: "-password",
+                populate: {
+                    path: "_id",
+                    model: "SeekerDetails",
+                    select: "fullName phoneNumber"
+                }
+            })
+            .populate("jobId")
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(parseInt(limit));
@@ -37,15 +46,16 @@ export const getApplicants = async (req,res) => {
                 currentPage: parseInt(page),
                 totalPages,
                 totalItems: totalCount,
-                hasNextPage: page < totalPages,
-                hasPrevPage: page > 1
+                hasNextPage: parseInt(page) < totalPages,
+                hasPrevPage: parseInt(page) > 1
             }
         });
 
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        res.status(500).json({ success: false, message: err.message });
     }
 };
+
 
 export const getdetails = async (req, res) => {
     try {
@@ -64,9 +74,9 @@ export const getGraphData = async (req, res) => {
         const jobId = req.params.jobId;
 
         if (!mongoose.Types.ObjectId.isValid(jobId)) {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Invalid Job ID format." 
+            return res.status(400).json({
+                success: false,
+                message: "Invalid Job ID format."
             });
         }
 
@@ -102,9 +112,9 @@ export const getGraphData = async (req, res) => {
             const date = new Date(endDate);
             date.setDate(date.getDate() - (6 - i));
             const dateStr = date.toISOString().split('T')[0];
-            
+
             const dayData = applicants.find(a => a._id === dateStr);
-            
+
             result.push({
                 date: dateStr,
                 day: date.toLocaleDateString('en-US', { weekday: 'long' }),
@@ -116,11 +126,11 @@ export const getGraphData = async (req, res) => {
 
         const dailyAverage = totalApplicants / 7;
 
-        const highestDay = result.reduce((max, day) => 
+        const highestDay = result.reduce((max, day) =>
             day.applicants > max.applicants ? day : max
         );
 
-        const lowestDay = result.reduce((min, day) => 
+        const lowestDay = result.reduce((min, day) =>
             day.applicants < min.applicants ? day : min
         );
 
@@ -146,9 +156,9 @@ export const getGraphData = async (req, res) => {
 
     } catch (error) {
         console.error("Error fetching graph data:", error);
-        res.status(500).json({ 
-            success: false, 
-            error: "Internal server error" 
+        res.status(500).json({
+            success: false,
+            error: "Internal server error"
         });
     }
 };
@@ -169,7 +179,7 @@ export const checkApplied = async (req, res) => {
     }
 };
 
-export const applyJob = async (req, res) => { 
+export const applyJob = async (req, res) => {
     try {
         const { jobId, applicantId } = req.body;
 

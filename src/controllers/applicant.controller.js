@@ -33,27 +33,36 @@ export const getApplicants = async (req, res) => {
                     model: "SeekerDetails",
                 }
             })
-            .populate("jobId")
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(parseInt(limit));
 
+        // Format response in a structured way
+        const formattedApplicants = applicants.map(applicant => ({
+            id: applicant._id,
+            job: applicant.jobId,
+            seekerDetails: applicant.applicantId?._id || null,
+            shortListed: applicant.shortListed,
+            dateApplied: applicant.dateApplied
+        }));
+
         res.status(200).json({
             success: true,
-            applicants,
             pagination: {
                 currentPage: parseInt(page),
                 totalPages,
                 totalItems: totalCount,
                 hasNextPage: parseInt(page) < totalPages,
                 hasPrevPage: parseInt(page) > 1
-            }
+            },
+            applicants: formattedApplicants
         });
 
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
 };
+
 
 
 export const getdetails = async (req, res) => {

@@ -38,12 +38,10 @@ export const getApplicants = async (req, res) => {
             .limit(parseInt(limit));
 
         // Format response in a structured way
-        const formattedApplicants = applicants.map(applicant => ({
-            id: applicant._id,
-            job: applicant.jobId,
+        const formattedApplicants = applicants.map(applicant => ({    
             seekerDetails: applicant.applicantId?._id || null,
             shortListed: applicant.shortListed,
-            dateApplied: applicant.dateApplied
+            
         }));
 
         res.status(200).json({
@@ -62,8 +60,6 @@ export const getApplicants = async (req, res) => {
         res.status(500).json({ success: false, message: err.message });
     }
 };
-
-
 
 export const getdetails = async (req, res) => {
     try {

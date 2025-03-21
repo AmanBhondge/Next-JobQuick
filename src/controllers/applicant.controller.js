@@ -31,7 +31,6 @@ export const getApplicants = async (req, res) => {
                 populate: {
                     path: "_id",
                     model: "SeekerDetails",
-                    select: "fullName phoneNumber"
                 }
             })
             .populate("jobId")

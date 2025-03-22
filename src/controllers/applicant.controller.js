@@ -259,8 +259,10 @@ export const updateApplication = async (req, res) => {
             return res.status(404).json({ message: 'Applicant not found' });
         }
 
-        res.status(200).json(updatedApplicant);
-    } catch (err) {
+        res.status(200).json({ message: 'Application updated successfully' });
+
+    }
+    catch (err) {
         res.status(500).json({ message: err.message });
     }
 };

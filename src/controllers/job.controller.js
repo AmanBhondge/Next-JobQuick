@@ -77,30 +77,54 @@ export const getFilteredJobs = async (req, res) => {
 
 export const getDashboardJobs = async (req, res) => {
     try {
-        const { creatorId } = req.params;
-
-        if (!mongoose.Types.ObjectId.isValid(creatorId)) {
-            return res.status(400).json({ success: false, message: "Invalid creatorId" });
+      const { creatorId } = req.params;
+      const { page = 1, limit = 10 } = req.query; 
+      
+      const pageNumber = parseInt(page);
+      const limitNumber = parseInt(limit);
+      
+      const skip = (pageNumber - 1) * limitNumber;
+      
+      if (!mongoose.Types.ObjectId.isValid(creatorId)) {
+        return res.status(400).json({ success: false, message: "Invalid creatorId" });
+      }
+      
+      const jobs = await Job.find({ createdBy: creatorId })
+        .populate("category", "title")
+        .populate("createdBy", "email")
+        .skip(skip)
+        .limit(limitNumber)
+        .sort({ createdAt: -1 }); 
+      
+      const totalJobs = await Job.countDocuments({ createdBy: creatorId });
+      
+      const jobIds = jobs.map(job => job._id);
+      const totalApplicants = await Applicant.countDocuments({ jobId: { $in: jobIds } });
+      const totalShortlisted = await Applicant.countDocuments({ jobId: { $in: jobIds }, shortListed: true });
+      
+      const totalPages = Math.ceil(totalJobs / limitNumber);
+      
+      res.status(200).json({
+        success: true,
+        jobs,
+        statistics: {
+          totalJobs,
+          totalApplicants,
+          totalShortlisted
+        },
+        pagination: {
+          currentPage: pageNumber,
+          totalPages,
+          totalItems: totalJobs,
+          itemsPerPage: limitNumber,
+          hasNextPage: pageNumber < totalPages,
+          hasPrevPage: pageNumber > 1
         }
-
-        const jobs = await Job.find({ createdBy: creatorId })
-            .populate("category", "title")
-            .populate("createdBy", "email");
-
-        const totalJobs = await Job.countDocuments({ createdBy: creatorId });
-        const jobIds = jobs.map(job => job._id);
-        const totalApplicants = await Applicant.countDocuments({ jobId: { $in: jobIds } });
-        const totalShortlisted = await Applicant.countDocuments({ jobId: { $in: jobIds }, shortListed: true });
-
-        res.status(200).json({
-            success: true,
-            jobs,
-            statistics: { totalJobs, totalApplicants, totalShortlisted }
-        });
+      });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+      res.status(500).json({ success: false, error: error.message });
     }
-};
+  };
 
 export const getTableJobs = async (req, res) => {
     try {

@@ -64,9 +64,11 @@ export const getApplicants = async (req, res) => {
 export const getdetails = async (req, res) => {
     try {
         const applicant = await Applicant.findById(req.params.id)
-            .populate('jobId') 
-            .populate('applicantId');
-
+            .populate({
+                path: 'applicantId',
+                model: 'Auth',
+                select: "-password -role"
+            });
         if (!applicant) {
             return res.status(404).json({ message: 'Applicant not found' });
         }
@@ -78,8 +80,8 @@ export const getdetails = async (req, res) => {
         }
 
         const response = {
-            ...applicant.toObject(), 
-            seekerDetails, 
+            ...applicant.toObject(),
+            seekerDetails,
         };
 
         res.status(200).json(response);

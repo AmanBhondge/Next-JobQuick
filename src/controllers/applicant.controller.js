@@ -38,10 +38,10 @@ export const getApplicants = async (req, res) => {
             .skip(skip)
             .limit(parseInt(limit));
 
-        const formattedApplicants = applicants.map(applicant => ({    
+        const formattedApplicants = applicants.map(applicant => ({
+            _id: applicant._id,
             seekerDetails: applicant.applicantId?._id || null,
             shortListed: applicant.shortListed,
-            
         }));
 
         res.status(200).json({

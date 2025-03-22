@@ -39,7 +39,7 @@ export const getApplicants = async (req, res) => {
             .limit(parseInt(limit));
 
         const formattedApplicants = applicants.map(applicant => ({
-            _id: applicant._id,
+            seekerApplicant: applicant._id,
             seekerDetails: applicant.applicantId?._id || null,
             shortListed: applicant.shortListed,
         }));

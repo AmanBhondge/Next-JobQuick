@@ -1,6 +1,7 @@
 import Applicant from "../models/applicant.model.js";
 import mongoose from "mongoose";
 import Auth from "../models/auth.model.js";
+import SeekerDetails from "../models/seeker.model.js";
 
 export const getApplicants = async (req, res) => {
     try {
@@ -37,7 +38,6 @@ export const getApplicants = async (req, res) => {
             .skip(skip)
             .limit(parseInt(limit));
 
-        // Format response in a structured way
         const formattedApplicants = applicants.map(applicant => ({    
             seekerDetails: applicant.applicantId?._id || null,
             shortListed: applicant.shortListed,
@@ -63,12 +63,29 @@ export const getApplicants = async (req, res) => {
 
 export const getdetails = async (req, res) => {
     try {
-        const applicant = await Applicant.findById(req.params.id).populate('jobId').populate('applicantId');
+        const applicant = await Applicant.findById(req.params.id)
+            .populate('jobId') 
+            .populate('applicantId');
+
         if (!applicant) {
             return res.status(404).json({ message: 'Applicant not found' });
         }
-        res.status(200).json(applicant);
+
+        const seekerDetails = await SeekerDetails.findById(applicant.applicantId);
+
+        if (!seekerDetails) {
+            return res.status(404).json({ message: 'Seeker details not found' });
+        }
+
+        const response = {
+            ...applicant.toObject(), 
+            seekerDetails, 
+        };
+
+        res.status(200).json(response);
+
     } catch (err) {
+        console.error("Error fetching applicant details:", err);
         res.status(500).json({ message: err.message });
     }
 };

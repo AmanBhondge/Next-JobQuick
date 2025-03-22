@@ -15,7 +15,7 @@ import categoriesRouter from './routes/catogries.route.js';
 import jobRouter from './routes/job.route.js'
 import mockTestRouter from './routes/mocktest.route.js';
 import applicantRouter from './routes/applicant.route.js';
-
+import atsRouter from './routes/ats.routes.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -32,6 +32,7 @@ app.use('/api/v1/categories',categoriesRouter);
 app.use('/api/v1/job', jobRouter);
 app.use('/api/v1/mocktest', mockTestRouter);
 app.use('/api/v1/applicant', applicantRouter);
+app.use('/api/v1/ats', atsRouter);
 
 
 app.use(errorMiddleware);

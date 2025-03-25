@@ -1,6 +1,6 @@
 import express from 'express';
 import authorize from '../middlewares/authorize.middleware.js';
-import { getFilteredJobs, getDashboardJobs, getTableJobs, getJobDetails, postJob, updateJob } from '../controllers/job.controller.js';
+import { getFilteredJobs, getDashboardJobs, getTableJobs, getJobDetails, postJob, updateJob, deleteJob } from '../controllers/job.controller.js';
 
 const jobRouter = express.Router();
 
@@ -15,5 +15,7 @@ jobRouter.get('/:id', authorize, getJobDetails);
 jobRouter.post('/post', authorize, postJob);
 
 jobRouter.patch('/update/:id', authorize, updateJob);
+
+jobRouter.delete('/delete/:jobId', authorize, deleteJob);
 
 export default jobRouter;

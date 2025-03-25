@@ -280,3 +280,25 @@ export const updateJob = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
+export const deleteJob = async (req, res) => {
+    try {
+        const { jobId } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(jobId)) {
+            return res.status(400).json({ success: false, message: "Invalid Job ID" });
+        }
+
+        const job = await Job.findByIdAndDelete(jobId);
+        if (!job) {
+            return res.status(404).json({ success: false, message: "Job not found" });
+        }
+
+        await Applicant.deleteMany({ jobId });
+
+        res.status(200).json({ success: true, message: "Job and related applicants deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting job:", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};

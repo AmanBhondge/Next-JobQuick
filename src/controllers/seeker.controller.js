@@ -20,7 +20,7 @@ export const getSeekerDetails = async (req, res) => {
             });
 
         if (!seekerDetails) {
-            return res.status(404).json({ message: "Seeker user not found" });
+            return res.status(404).json({ message: "Seeker user not found / Fill the details" });
         }
 
         res.status(200).json(seekerDetails);

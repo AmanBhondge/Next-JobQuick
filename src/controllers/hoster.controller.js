@@ -20,7 +20,7 @@ export const getHosterDetails = async (req, res) => {
             });
 
         if (!hosterDetails) {
-            return res.status(404).json({ message: "Hoster user not found" });
+            return res.status(404).json({ message: "Hoster user not found / Fill the details" });
         }
         res.status(200).json(hosterDetails);
     } catch (error) {

@@ -6,13 +6,19 @@ const validGenders = ["Male", "Female", "Other"];
 
 export const getSeekerDetails = async (req, res) => {
     try {
-        const { id } = req.params; 
+        const { id } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ message: "Invalid SeekerDetails ID" });
         }
 
-        const seekerDetails = await SeekerDetails.findById(id);
+        const seekerDetails = await SeekerDetails.findById(id)
+            .populate({
+                path: "_id",
+                model: "Auth",
+                select: "-password"
+            });
+
         if (!seekerDetails) {
             return res.status(404).json({ message: "Seeker user not found" });
         }
@@ -70,7 +76,7 @@ export const postSeekerDetails = async (req, res) => {
 
 export const updateSeekerDetails = async (req, res) => {
     try {
-        const { id } = req.params; 
+        const { id } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ message: "Invalid SeekerDetails ID" });
@@ -89,7 +95,7 @@ export const updateSeekerDetails = async (req, res) => {
         }
 
         const updatedSeekerDetails = await SeekerDetails.findByIdAndUpdate(
-            id, 
+            id,
             req.body,
             { new: true, runValidators: true }
         );

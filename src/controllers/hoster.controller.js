@@ -1,5 +1,5 @@
 import HosterDetails from "../models/hoster.model.js";
-import Auth from "../models/auth.model.js"; 
+import Auth from "../models/auth.model.js";
 import mongoose from "mongoose";
 
 const validGenders = ["Male", "Female", "Other"];
@@ -7,10 +7,18 @@ const validGenders = ["Male", "Female", "Other"];
 export const getHosterDetails = async (req, res) => {
     try {
         const { id } = req.params;
+
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ message: "Invalid HosterDetails ID" });
         }
-        const hosterDetails = await HosterDetails.findById(id);
+
+        const hosterDetails = await HosterDetails.findById(id)
+            .populate({
+                path: "_id",
+                model: "Auth",
+                select: "-password"
+            });
+
         if (!hosterDetails) {
             return res.status(404).json({ message: "Hoster user not found" });
         }
@@ -23,7 +31,7 @@ export const getHosterDetails = async (req, res) => {
 
 export const postHosterDetails = async (req, res) => {
     try {
-        const { _id, gender } = req.body; 
+        const { _id, gender } = req.body;
 
         if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
             return res.status(400).json({ message: "Valid _id (Auth user ID) is required" });
@@ -47,7 +55,7 @@ export const postHosterDetails = async (req, res) => {
             return res.status(400).json({ message: `Invalid gender. Allowed values: ${validGenders.join(", ")}` });
         }
 
-        const hosterDetails = new HosterDetails({ _id, ...req.body }); 
+        const hosterDetails = new HosterDetails({ _id, ...req.body });
         await hosterDetails.save();
 
         res.status(201).json(hosterDetails);
@@ -59,7 +67,7 @@ export const postHosterDetails = async (req, res) => {
 
 export const updateHosterDetails = async (req, res) => {
     try {
-        const { id } = req.params; 
+        const { id } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ message: "Invalid HosterDetails ID" });
@@ -78,7 +86,7 @@ export const updateHosterDetails = async (req, res) => {
         }
 
         const updatedHosterDetails = await HosterDetails.findByIdAndUpdate(
-            id, 
+            id,
             req.body,
             { new: true, runValidators: true }
         );

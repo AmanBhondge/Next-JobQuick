@@ -3,6 +3,7 @@ import Auth from "../models/auth.model.js";
 import bcrypt from "bcryptjs";
 import Applicant from "../models/applicant.model.js";
 import SeekerDetails from "../models/seeker.model.js";
+import mongoose from "mongoose";
 
 export const signup = async (req, res) => {
   const { email, password, role } = req.body;

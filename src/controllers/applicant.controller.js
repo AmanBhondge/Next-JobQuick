@@ -202,6 +202,42 @@ export const checkApplied = async (req, res) => {
     }
 };
 
+export const getAppliedJobs = async (req, res) => {
+    try {
+        const { applicantId } = req.params;
+        let { page = 1, limit = 10 } = req.query;
+
+        if (!mongoose.Types.ObjectId.isValid(applicantId)) {
+            return res.status(400).json({ success: false, message: "Invalid applicantId" });
+        }
+
+        page = parseInt(page, 10);
+        limit = parseInt(limit, 10);
+
+        const applicants = await Applicant.find({ applicantId })
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .populate({
+                path: "jobId",
+                model: "Job"
+            });
+
+        const totalApplications = await Applicant.countDocuments({ applicantId });
+
+        res.status(200).json({
+            success: true,
+            jobs: applicants.map(app => app.jobId),
+            pagination: {
+                totalApplications,
+                totalPages: Math.ceil(totalApplications / limit),
+                currentPage: page
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+
 export const applyJob = async (req, res) => {
     try {
         const { jobId, applicantId } = req.body;
